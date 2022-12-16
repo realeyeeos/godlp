@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strings"
 
-	dlp "github.com/bytedance/godlp"
-	"github.com/bytedance/godlp/dlpheader"
+	dlp "github.com/realeyeeos/godlp"
+	"github.com/realeyeeos/godlp/dlpheader"
 )
 
 func dupString(src string, coefficient int) string {

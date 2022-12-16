@@ -1,5 +1,6 @@
-//go:generate go-bindata -o=bindata.go -pkg=dlp conf.yml
 // Package dlp provides dlp sdk api implementaion
+//
+//go:generate go-bindata -o=bindata.go -pkg=dlp conf.yml
 package dlp
 
 import (
@@ -8,10 +9,10 @@ import (
 	"strings"
 	"unsafe"
 
-	"github.com/bytedance/godlp/conf"
-	"github.com/bytedance/godlp/detector"
-	"github.com/bytedance/godlp/dlpheader"
-	"github.com/bytedance/godlp/mask"
+	"github.com/realeyeeos/godlp/conf"
+	"github.com/realeyeeos/godlp/detector"
+	"github.com/realeyeeos/godlp/dlpheader"
+	"github.com/realeyeeos/godlp/mask"
 	"gopkg.in/yaml.v2"
 )
 

@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/bytedance/godlp/dlpheader"
-	"github.com/bytedance/godlp/errlist"
+	"github.com/realeyeeos/godlp/dlpheader"
+	"github.com/realeyeeos/godlp/errlist"
 )
 
 // public func

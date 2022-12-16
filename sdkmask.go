@@ -3,9 +3,9 @@ package dlp
 
 import (
 	"fmt"
-	"github.com/bytedance/godlp/dlpheader"
-	"github.com/bytedance/godlp/errlist"
-	"github.com/bytedance/godlp/mask"
+	"github.com/realeyeeos/godlp/dlpheader"
+	"github.com/realeyeeos/godlp/errlist"
+	"github.com/realeyeeos/godlp/mask"
 	"reflect"
 )
 

@@ -2,7 +2,7 @@
 package dlp
 
 import (
-	"github.com/bytedance/godlp/conf"
+	"github.com/realeyeeos/godlp/conf"
 )
 
 // public func
@@ -30,7 +30,6 @@ func (I *Engine) ApplyConfigFile(filePath string) error {
 	}
 	return retErr
 }
-
 
 func (I *Engine) ApplyConfigDefault() error {
 	return I.loadDefCfg()

@@ -8,8 +8,8 @@ import (
 
 	"gopkg.in/yaml.v2"
 
-	"github.com/bytedance/godlp/dlpheader"
-	"github.com/bytedance/godlp/log"
+	"github.com/realeyeeos/godlp/dlpheader"
+	"github.com/realeyeeos/godlp/log"
 )
 
 type RuleTestItem struct {

@@ -1,4 +1,4 @@
-module github.com/bytedance/godlp
+module github.com/realeyeeos/godlp
 
 go 1.14
 

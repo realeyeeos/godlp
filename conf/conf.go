@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"github.com/bytedance/godlp/errlist"
+	"github.com/realeyeeos/godlp/errlist"
 	"gopkg.in/yaml.v2"
 )
 

@@ -9,9 +9,9 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/bytedance/godlp/conf"
-	"github.com/bytedance/godlp/dlpheader"
-	"github.com/bytedance/godlp/errlist"
+	"github.com/realeyeeos/godlp/conf"
+	"github.com/realeyeeos/godlp/dlpheader"
+	"github.com/realeyeeos/godlp/errlist"
 )
 
 const (
