@@ -7,10 +7,10 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"regexp"
 	"strings"
 	"unicode/utf8"
 
+	"github.com/dlclark/regexp2"
 	"github.com/realeyeeos/godlp/conf"
 	"github.com/realeyeeos/godlp/dlpheader"
 	"github.com/realeyeeos/godlp/errlist"
@@ -41,18 +41,18 @@ type Detector struct {
 	rule     conf.RuleItem // rule item in conf
 	RuleType int           // VALUE if there is no KReg and KDict
 	// Detect section in conf
-	KReg  []*regexp.Regexp    // regex list for Key
+	KReg  []*regexp2.Regexp   // regex list for Key
 	KDict map[string]struct{} // Dict for Key
-	VReg  []*regexp.Regexp    // Regex list for Value
+	VReg  []*regexp2.Regexp   // Regex list for Value
 	VDict []string            // Dict for Value
 	// Filter section in conf
-	BAlgo []string         // algorithm for blacklist, supports MASKED
-	BDict []string         // Dict for blacklist
-	BReg  []*regexp.Regexp // Regex list for blacklist
+	BAlgo []string          // algorithm for blacklist, supports MASKED
+	BDict []string          // Dict for blacklist
+	BReg  []*regexp2.Regexp // Regex list for blacklist
 	// Verify section in conf
-	CDict []string         // Dict for Context Verification
-	CReg  []*regexp.Regexp // Regex List for Context Verification
-	VAlgo []string         // algorithm for Verifycation, such as IDCARD
+	CDict []string          // Dict for Context Verification
+	CReg  []*regexp2.Regexp // Regex List for Context Verification
+	VAlgo []string          // algorithm for Verifycation, such as IDCARD
 }
 
 type KVItem struct {
@@ -186,7 +186,7 @@ func (I *Detector) doDetectKV(kvItem *KVItem, results *[]*dlpheader.DetectResult
 
 		if !hit {
 			for _, re := range I.KReg {
-				if re.Match([]byte(lastKey)) {
+				if match, _ := re.MatchString(lastKey); match {
 					hit = true
 					break
 				}
@@ -283,17 +283,17 @@ func (I *Detector) setRuleType() {
 }
 
 // releaseReg will set item of list as nil
-func (I *Detector) releaseReg(list []*regexp.Regexp) {
+func (I *Detector) releaseReg(list []*regexp2.Regexp) {
 	for i := range list {
 		list[i] = nil
 	}
 }
 
 // preCompile compiles regex string list then return regex list
-func (I *Detector) preCompile(reList []string) []*regexp.Regexp {
-	list := make([]*regexp.Regexp, 0, DEF_RESULT_SIZE)
+func (I *Detector) preCompile(reList []string) []*regexp2.Regexp {
+	list := make([]*regexp2.Regexp, 0, DEF_RESULT_SIZE)
 	for _, reStr := range reList {
-		if re, err := regexp.Compile(reStr); err == nil {
+		if re, err := regexp2.Compile(reStr, 0); err == nil {
 			list = append(list, re)
 		} else {
 			//log.Errorf("Regex %s ,error: %w", reStr, err)
@@ -323,12 +323,12 @@ func lowerStringList2Map(dictList []string) map[string]struct{} {
 }
 
 // regexDetectBytes use regex to detect inputBytes
-func (I *Detector) regexDetectBytes(re *regexp.Regexp, inputBytes []byte) ([]*dlpheader.DetectResult, error) {
+func (I *Detector) regexDetectBytes(re *regexp2.Regexp, inputBytes []byte) ([]*dlpheader.DetectResult, error) {
 	if re == nil {
 		return nil, errlist.ERR_RE_EMPTY
 	}
 	results := make([]*dlpheader.DetectResult, 0, DEF_RESULT_SIZE)
-	if ret := re.FindAllIndex(inputBytes, -1); ret != nil {
+	if ret := regexp2FindAllIndex(re, string(inputBytes)); ret != nil {
 		for i := range ret {
 			pos := ret[i]
 			if res, err := I.createValueResult(inputBytes, pos); err == nil {
@@ -414,7 +414,7 @@ func (I *Detector) filter(in []*dlpheader.DetectResult) []*dlpheader.DetectResul
 		if found == false {
 			for _, re := range I.BReg {
 				// Found in BlackList BReg
-				if re.Match([]byte(res.Text)) {
+				if match, _ := re.MatchString(res.Text); match {
 					found = true
 					break
 				}
@@ -527,7 +527,7 @@ func (I *Detector) verifyByContext(inputBytes []byte, res *dlpheader.DetectResul
 	}
 	if !found {
 		for _, re := range I.CReg {
-			if re.Match(subInput) {
+			if match, _ := re.MatchString(string(subInput)); match {
 				found = true
 				break
 			}
@@ -748,4 +748,14 @@ func (I *Detector) getLastKey(path string) (string, bool) {
 			return path[pos+1:], true
 		}
 	}
+}
+
+func regexp2FindAllIndex(re *regexp2.Regexp, s string) [][]int {
+	result := make([][]int, 0, 10)
+	m, _ := re.FindStringMatch(s)
+	for m != nil {
+		result = append(result, []int{m.Index, m.Index + m.Length})
+		m, _ = re.FindNextMatch(m)
+	}
+	return result
 }
