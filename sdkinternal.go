@@ -143,7 +143,7 @@ func (I *Engine) loadMaskWorker() error {
 // in DetectJSON(), isDeidentify is false, kvMap is write only, will store json object path and value
 // in DeidentifyJSON(), isDeidentify is true, kvMap is read only, will store path and MaskText of sensitive information
 func (I *Engine) dfsJSON(path string, ptr *interface{}, kvMap map[string]string, isDeidentify bool) interface{} {
-	path = strings.ToLower(path)
+	//path = strings.ToLower(path)
 	switch (*ptr).(type) {
 	case map[string]interface{}:
 		for k, v := range (*ptr).(map[string]interface{}) {
