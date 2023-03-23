@@ -752,10 +752,25 @@ func (I *Detector) getLastKey(path string) (string, bool) {
 
 func regexp2FindAllIndex(re *regexp2.Regexp, s string) [][]int {
 	result := make([][]int, 0, 10)
-	m, _ := re.FindStringMatch(s)
+	var runes, idxMap = getRunesAndMap(s)
+	m, _ := re.FindRunesMatch(runes)
 	for m != nil {
-		result = append(result, []int{m.Index, m.Index + m.Length})
+		fmt.Println(m.String())
+		result = append(result, []int{idxMap[m.Index], idxMap[m.Index] + m.Length})
 		m, _ = re.FindNextMatch(m)
 	}
 	return result
+}
+
+func getRunesAndMap(in string) ([]rune, map[int]int) {
+	ret := make([]rune, len(in))
+	idxMap := make(map[int]int)
+
+	i := 0
+	for strIdx, r := range in {
+		idxMap[i] = strIdx
+		ret[i] = r
+		i++
+	}
+	return ret[:i], idxMap
 }
