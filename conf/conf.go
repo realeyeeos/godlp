@@ -35,6 +35,10 @@ type RuleItem struct {
 		KDict []string `yaml:"KDict,flow"` // Dict for Key
 		VReg  []string `yaml:"VReg"`       // Regex List for Value
 		VDict []string `yaml:"VDict,flow"` // Dict for Value
+		// 0表示或 1表示与
+		KRelation     int `yaml:"KRelation"`     // Relation for Key
+		VRelation     int `yaml:"VRelation"`     // Relation for Value
+		KAndVRelation int `yaml:"KAndVRelation"` // Relation for Key And Value
 	} `yaml:"Detect"`
 	// result which is hit by blacklist will not returned to caller
 	Filter struct {
