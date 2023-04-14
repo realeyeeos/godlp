@@ -33,8 +33,8 @@ const (
 	DEF_RESULT_SIZE         = 4
 	DEF_CONTEXT_RANGE       = 32
 	DEF_IDCARD_LEN          = 18
-	RULE_MATCH_RELATION_OR  = 1
-	RULE_MATCH_RELATION_AND = 2
+	RULE_MATCH_RELATION_OR  = "OR"
+	RULE_MATCH_RELATION_AND = "AND"
 )
 
 // ContextVerifyFunc defines verify by context function
@@ -44,14 +44,13 @@ type Detector struct {
 	rule     conf.RuleItem // rule item in conf
 	RuleType int           // VALUE if there is no KReg and KDict
 	// Detect section in conf
-	KReg  []*regexp2.Regexp   // regex list for Key
-	KDict map[string]struct{} // Dict for Key
-	VReg  []*regexp2.Regexp   // Regex list for Value
-	VDict []string            // Dict for Value
-	// 0表示或 1表示与
-	KRelation     int
-	VRelation     int
-	KAndVRelation int
+	KReg          []*regexp2.Regexp   // regex list for Key
+	KDict         map[string]struct{} // Dict for Key
+	VReg          []*regexp2.Regexp   // Regex list for Value
+	VDict         []string            // Dict for Value
+	KRelation     string
+	VRelation     string
+	KAndVRelation string
 	// Filter section in conf
 	BAlgo []string          // algorithm for blacklist, supports MASKED
 	BDict []string          // Dict for blacklist
@@ -134,7 +133,7 @@ func (I *Detector) UseRegex() bool {
 // DetectKey detects sensitive info for Key
 func (I *Detector) DetectKey(kvItem *KVItem) (*dlpheader.DetectResult, error) {
 	lastKey, ifExtracted := I.getLastKey(kvItem.Key)
-	if I.KRelation == RULE_MATCH_RELATION_OR || I.KRelation == 0 {
+	if I.KRelation == RULE_MATCH_RELATION_OR || I.KRelation == "" {
 		_, hit := I.KDict[lastKey]
 		if (!hit) && ifExtracted {
 			_, hit = I.KDict[kvItem.Key]
@@ -223,7 +222,7 @@ func (I *Detector) DetectValues(kvItem *KVItem) ([]*dlpheader.DetectResult, erro
 // DetectBytes detects sensitive info for bytes, is called from Detect()
 func (I *Detector) DetectBytes(inputBytes []byte) ([]*dlpheader.DetectResult, error) {
 	results := make([]*dlpheader.DetectResult, 0, DEF_RESULT_SIZE)
-	if I.VRelation == RULE_MATCH_RELATION_OR || I.VRelation == 0 {
+	if I.VRelation == RULE_MATCH_RELATION_OR || I.VRelation == "" {
 		for _, reObj := range I.VReg {
 			if ret, err := I.regexDetectBytes(reObj, inputBytes); err == nil {
 				results = append(results, ret...)
@@ -335,7 +334,7 @@ func (I *Detector) doDetectKV(kvItem *KVItem, results *[]*dlpheader.DetectResult
 				*results = append(*results, valuesRes...)
 			}
 			return
-		} else if I.KAndVRelation == RULE_MATCH_RELATION_AND || I.KAndVRelation == 0 { //如果K和V之间是与的关系
+		} else if I.KAndVRelation == RULE_MATCH_RELATION_AND || I.KAndVRelation == "" { //如果K和V之间是与的关系
 			res, err := I.DetectKey(kvItem)
 			if err != nil {
 				log.Errorf("I.DetectKey error, err is %s", err.Error())
