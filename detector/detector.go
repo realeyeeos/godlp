@@ -905,8 +905,8 @@ func regexp2FindAllIndex(re *regexp2.Regexp, s string) [][]int {
 	var runes, idxMap = getRunesAndMap(s)
 	m, _ := re.FindRunesMatch(runes)
 	for m != nil {
-		fmt.Println(m.String())
-		result = append(result, []int{idxMap[m.Index], idxMap[m.Index] + m.Length})
+		size := len(m.String())
+		result = append(result, []int{idxMap[m.Index], idxMap[m.Index] + size})
 		m, _ = re.FindNextMatch(m)
 	}
 	return result
